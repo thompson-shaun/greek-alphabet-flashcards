@@ -324,6 +324,7 @@ const state = {
   isPassComplete: false,
   isRevealed: false,
   audioBySlug: {},
+  audioPreloadStarted: false,
 };
 
 const elements = {
@@ -497,6 +498,41 @@ function getOrCreateAudio(letter) {
   return audio;
 }
 
+async function preloadAllAudio() {
+  if (state.audioPreloadStarted) {
+    return;
+  }
+  state.audioPreloadStarted = true;
+
+  await Promise.all(
+    greekLetters.map(async (letter) => {
+      const slug = letter.slug;
+      if (state.audioBySlug[slug]) {
+        return;
+      }
+
+      const sourcePath = audioPathForLetter(letter);
+      try {
+        const response = await fetch(sourcePath, { cache: "force-cache" });
+        if (!response.ok) {
+          return;
+        }
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const audio = new Audio(objectUrl);
+        audio.preload = "auto";
+        audio.playsInline = true;
+        audio.setAttribute("playsinline", "");
+        audio.load();
+        state.audioBySlug[slug] = audio;
+      } catch {
+        // Fallback to file-backed audio object if fetch preload fails.
+        getOrCreateAudio(letter);
+      }
+    })
+  );
+}
+
 function warmAudio(letter) {
   const audio = getOrCreateAudio(letter);
   if (audio.readyState < 2) {
@@ -623,3 +659,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 render();
+
+// Kick off full audio preloading at startup to minimize mobile playback delay.
+void preloadAllAudio();
