@@ -1,0 +1,346 @@
+:root {
+  --bg-1: #f3f8ff;
+  --bg-2: #e4eefc;
+  --ink: #10243f;
+  --muted: #4f6787;
+  --card: #ffffff;
+  --line: #c1d3ee;
+  --accent: #0c4da2;
+  --accent-2: #2b78d0;
+  --shadow: 0 16px 38px rgba(15, 45, 89, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 12% 10%, #ffffff 0%, transparent 44%),
+    radial-gradient(circle at 86% 20%, #fff2d9 0%, transparent 34%),
+    linear-gradient(145deg, var(--bg-1), var(--bg-2));
+  position: relative;
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.15;
+  background-image: radial-gradient(#000 0.5px, transparent 0.5px);
+  background-size: 4px 4px;
+}
+
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: max(1.2rem, env(safe-area-inset-top)) 1rem max(1.6rem, env(safe-area-inset-bottom));
+  display: grid;
+  gap: 1.25rem;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-family: "Literata", serif;
+  font-size: clamp(1.75rem, 5vw, 2.8rem);
+  letter-spacing: 0.01em;
+}
+
+.app-header p {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  max-width: 68ch;
+}
+
+.card-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 1.2rem;
+  transform-origin: center;
+  animation: card-enter 280ms ease;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.letter-index {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+.letter-name {
+  margin: 0.3rem 0 0.6rem;
+  font-family: "Literata", serif;
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-weight: 700;
+}
+
+.glyphs {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.glyph {
+  font-family: "Literata", serif;
+  line-height: 1;
+}
+
+.glyph.large {
+  font-size: clamp(2.6rem, 14vw, 5.8rem);
+}
+
+.glyph:not(.large) {
+  font-size: clamp(2rem, 10vw, 4rem);
+  color: #3d404b;
+}
+
+.equivalent {
+  margin: 0.25rem 0 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.guide-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.guide-grid h2 {
+  margin: 0;
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.guide-grid p {
+  margin: 0.35rem 0 0;
+  font-size: 1.05rem;
+}
+
+.note {
+  margin: 0.9rem 0 0;
+  padding: 0.65rem 0.8rem;
+  border-left: 4px solid var(--accent);
+  background: #eef5ff;
+  border-radius: 8px;
+}
+
+.prompt {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: #edf4ff;
+  border: 1px dashed #88aee4;
+  color: #1f4d91;
+  font-weight: 500;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.55rem;
+}
+
+.swipe-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 600;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+button:hover,
+button:focus-visible {
+  transform: translateY(-1px);
+  border-color: #6f95cd;
+}
+
+button.accent {
+  border: none;
+  color: #fff;
+  background: linear-gradient(130deg, var(--accent), var(--accent-2));
+}
+
+button.ghost {
+  background: transparent;
+}
+
+button.good {
+  border-color: #8fc2a7;
+  background: #ecf9f1;
+}
+
+button.bad {
+  border-color: #d2b19e;
+  background: #fff3ea;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.progress-section {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 252, 245, 0.7);
+  padding: 0.7rem 0.8rem 0.85rem;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.45rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: #d5e2f4;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 4%;
+  height: 100%;
+  background: linear-gradient(90deg, #0c4da2, #4a90e2);
+  transition: width 220ms ease;
+}
+
+.summary {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1rem;
+}
+
+.summary h2 {
+  margin: 0 0 0.5rem;
+  font-family: "Literata", serif;
+}
+
+.summary p {
+  margin: 0 0 0.8rem;
+}
+
+.summary .controls {
+  grid-template-columns: 1fr 1fr;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: calc(6.8rem + env(safe-area-inset-bottom));
+  }
+
+  .app-header h1 {
+    font-size: clamp(1.55rem, 7.2vw, 2.2rem);
+  }
+
+  .app-header p {
+    font-size: 0.98rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .glyph.large {
+    font-size: clamp(3.3rem, 22vw, 5.6rem);
+  }
+
+  .glyph:not(.large) {
+    font-size: clamp(2.45rem, 16vw, 4rem);
+  }
+
+  .controls {
+    position: fixed;
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
+    z-index: 20;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    padding: 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 26px rgba(14, 37, 73, 0.18);
+  }
+
+  .card-shell .controls button {
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  .swipe-hint {
+    padding-bottom: 0.35rem;
+  }
+
+  .summary .controls {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .summary .controls button {
+    min-height: 48px;
+  }
+
+  .progress-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}

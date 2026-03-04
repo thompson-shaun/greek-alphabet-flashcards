@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Greek Alphabet Flashcards</title>
+    <meta
+      name="description"
+      content="Mobile-friendly Greek alphabet flashcards with pronunciation guides and audio."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <main class="app" aria-live="polite">
+      <header class="app-header">
+        <h1>Greek Alphabet Flashcards</h1>
+        <p>Learn each letter with English equivalents, sound cues, and guided pronunciation.</p>
+      </header>
+
+      <section class="card-shell" aria-label="Flashcard section">
+        <article class="card" id="card" tabindex="0">
+          <p class="letter-index" id="letterIndex"></p>
+          <div class="glyphs">
+            <span class="glyph large" id="glyphUpper"></span>
+            <span class="glyph" id="glyphLower"></span>
+          </div>
+          <p class="prompt" id="promptText">Try to recall the name and sound, then reveal.</p>
+
+          <div id="answerPanel" class="answer-panel hidden">
+            <p class="letter-name" id="letterName"></p>
+            <p class="equivalent" id="equivalent"></p>
+            <div class="guide-grid">
+              <div>
+                <h2>IPA</h2>
+                <p id="ipa"></p>
+              </div>
+              <div>
+                <h2>Say it like</h2>
+                <p id="englishHint"></p>
+              </div>
+            </div>
+            <p class="note" id="note"></p>
+          </div>
+        </article>
+
+        <div class="controls">
+          <button type="button" id="revealBtn" class="accent">Reveal</button>
+          <button type="button" id="goodBtn" class="good">Good (←)</button>
+          <button type="button" class="accent" id="playBtn">Play Audio</button>
+          <button type="button" id="badBtn" class="bad">Bad (→)</button>
+        </div>
+        <p class="swipe-hint">Tap or swipe up to reveal. Swipe left for Good, right for Bad. Keyboard: space reveal, ← good, → bad, P play.</p>
+      </section>
+
+      <section class="progress-section" aria-label="Progress">
+        <div class="progress-meta">
+          <span id="progressText"></span>
+          <button type="button" id="shuffleBtn" class="ghost">Shuffle</button>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="24" aria-valuenow="1">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </section>
+
+      <section class="summary hidden" id="summaryPanel" aria-live="polite">
+        <h2 id="summaryTitle"></h2>
+        <p id="summaryBody"></p>
+        <div class="controls">
+          <button type="button" id="continueBtn" class="accent">Continue Missed</button>
+          <button type="button" id="restartBtn">Restart Full Deck</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
