@@ -323,6 +323,7 @@ const state = {
   passResults: [],
   isPassComplete: false,
   isRevealed: false,
+  audioBySlug: {},
 };
 
 const elements = {
@@ -386,6 +387,8 @@ function render() {
   elements.progressTrack.setAttribute("aria-valuemax", String(total));
   elements.progressTrack.setAttribute("aria-valuenow", String(state.index + 1));
   elements.progressFill.style.width = `${((state.index + 1) / total) * 100}%`;
+
+  warmCurrentAndNextAudio();
 }
 
 function renderSummary() {
@@ -476,11 +479,48 @@ function revealCard() {
   render();
 }
 
-async function tryPlaySource(path) {
-  const audio = new Audio(path);
+function audioPathForLetter(letter) {
+  return `assets/audio/${String(letter.order).padStart(2, "0")}-${letter.slug}.m4a`;
+}
+
+function getOrCreateAudio(letter) {
+  const cached = state.audioBySlug[letter.slug];
+  if (cached) {
+    return cached;
+  }
+
+  const audio = new Audio(audioPathForLetter(letter));
   audio.preload = "auto";
   audio.playsInline = true;
   audio.setAttribute("playsinline", "");
+  state.audioBySlug[letter.slug] = audio;
+  return audio;
+}
+
+function warmAudio(letter) {
+  const audio = getOrCreateAudio(letter);
+  if (audio.readyState < 2) {
+    audio.load();
+  }
+}
+
+function warmCurrentAndNextAudio() {
+  if (state.isPassComplete || state.deck.length === 0) {
+    return;
+  }
+
+  warmAudio(currentLetter());
+  const nextIndex = (state.index + 1) % state.deck.length;
+  const nextLetter = state.deck[nextIndex];
+  if (nextLetter.slug !== currentLetter().slug) {
+    warmAudio(nextLetter);
+  }
+}
+
+async function tryPlayAudio(audio) {
+  // Restarting avoids queueing stale in-flight playback on mobile Safari.
+  audio.pause();
+  audio.currentTime = 0;
 
   try {
     await audio.play();
@@ -514,8 +554,8 @@ function speakFallback(letter) {
 
 async function playAudio() {
   const letter = currentLetter();
-  const audioPath = `assets/audio/${String(letter.order).padStart(2, "0")}-${letter.slug}.m4a`;
-  const played = await tryPlaySource(audioPath);
+  const audio = getOrCreateAudio(letter);
+  const played = await tryPlayAudio(audio);
   if (played) {
     return;
   }
