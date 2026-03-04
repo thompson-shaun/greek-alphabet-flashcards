@@ -325,6 +325,7 @@ const state = {
   isRevealed: false,
   audioBySlug: {},
   audioPreloadStarted: false,
+  audioPrimed: false,
 };
 
 const elements = {
@@ -553,6 +554,35 @@ function warmCurrentAndNextAudio() {
   }
 }
 
+function primeAudioOnFirstGesture() {
+  if (state.audioPrimed) {
+    return;
+  }
+  state.audioPrimed = true;
+
+  // Start background preload as soon as we get a user gesture.
+  void preloadAllAudio();
+
+  // Prime decoder/output path silently so the first audible play is fast.
+  const audio = getOrCreateAudio(currentLetter());
+  const priorVolume = audio.volume;
+  audio.volume = 0;
+  const primePromise = audio.play();
+  if (primePromise && typeof primePromise.then === "function") {
+    primePromise
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = priorVolume;
+      })
+      .catch(() => {
+        audio.volume = priorVolume;
+      });
+  } else {
+    audio.volume = priorVolume;
+  }
+}
+
 async function tryPlayAudio(audio) {
   // Restarting avoids queueing stale in-flight playback on mobile Safari.
   audio.pause();
@@ -643,6 +673,7 @@ elements.card.addEventListener("touchend", (event) => {
 elements.card.addEventListener("click", revealCard);
 
 document.addEventListener("keydown", (event) => {
+  primeAudioOnFirstGesture();
   if (event.key === " ") {
     event.preventDefault();
     revealCard();
@@ -658,7 +689,10 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+document.addEventListener("pointerdown", primeAudioOnFirstGesture, { once: true, passive: true });
+document.addEventListener("touchstart", primeAudioOnFirstGesture, { once: true, passive: true });
+
 render();
 
-// Kick off full audio preloading at startup to minimize mobile playback delay.
+// Start preloading early when possible.
 void preloadAllAudio();
