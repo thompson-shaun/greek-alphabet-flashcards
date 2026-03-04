@@ -476,32 +476,51 @@ function revealCard() {
   render();
 }
 
-function playAudio() {
+async function tryPlaySource(path) {
+  const audio = new Audio(path);
+  audio.preload = "auto";
+  audio.playsInline = true;
+  audio.setAttribute("playsinline", "");
+
+  try {
+    await audio.play();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function speakFallback(letter) {
+  if (!window.speechSynthesis) {
+    return;
+  }
+
+  const spokenName = greekNames[letter.slug] || letter.name;
+  const utterance = new SpeechSynthesisUtterance(spokenName);
+  utterance.lang = "el-GR";
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  const greekVoice = window.speechSynthesis
+    .getVoices()
+    .find((voice) => voice.lang.toLowerCase().startsWith("el"));
+  if (greekVoice) {
+    utterance.voice = greekVoice;
+  }
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+async function playAudio() {
   const letter = currentLetter();
   const audioPath = `assets/audio/${String(letter.order).padStart(2, "0")}-${letter.slug}.m4a`;
+  const played = await tryPlaySource(audioPath);
+  if (played) {
+    return;
+  }
 
-  const audio = new Audio(audioPath);
-  audio.play().catch(() => {
-    if (!window.speechSynthesis) {
-      return;
-    }
-
-    const spokenName = greekNames[letter.slug] || letter.name;
-    const utterance = new SpeechSynthesisUtterance(spokenName);
-    utterance.lang = "el-GR";
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-
-    const greekVoice = window.speechSynthesis
-      .getVoices()
-      .find((voice) => voice.lang.toLowerCase().startsWith("el"));
-    if (greekVoice) {
-      utterance.voice = greekVoice;
-    }
-
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-  });
+  speakFallback(letter);
 }
 
 elements.revealBtn.addEventListener("click", revealCard);

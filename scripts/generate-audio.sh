@@ -6,6 +6,10 @@ if ! command -v say >/dev/null 2>&1; then
   echo "Run this script on macOS or replace with your own TTS generator."
   exit 1
 fi
+if ! command -v afconvert >/dev/null 2>&1; then
+  echo "Error: macOS 'afconvert' command not found."
+  exit 1
+fi
 
 out_dir="assets/audio"
 mkdir -p "$out_dir"
@@ -48,9 +52,22 @@ entries=(
 
 for entry in "${entries[@]}"; do
   IFS='|' read -r order slug text <<<"$entry"
-  out_file="$out_dir/${order}-${slug}.m4a"
-  say -v "$voice" -r 135 "$text" -o "$out_file"
-  echo "Generated $out_file"
+  temp_base="$(mktemp /tmp/greek-audio.XXXXXX)"
+  temp_aiff="${temp_base}.aiff"
+  rm -f "$temp_base"
+
+  out_wav="$out_dir/${order}-${slug}.wav"
+  out_m4a="$out_dir/${order}-${slug}.m4a"
+
+  say -v "$voice" -r 135 "$text" -o "$temp_aiff"
+  afconvert "$temp_aiff" "$out_wav" -f WAVE -d LEI16
+
+  # Keep m4a generation attempt for compatibility with existing references.
+  # Some systems produce tiny/invalid m4a from `say`, so wav is primary.
+  say -v "$voice" -r 135 "$text" -o "$out_m4a" || true
+
+  rm -f "$temp_aiff"
+  echo "Generated $out_wav"
 done
 
 echo "Done."

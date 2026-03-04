@@ -8,7 +8,7 @@ A static, mobile-friendly flashcard site for the Greek alphabet.
 - English equivalent hints
 - Visual pronunciation guides (IPA + spoken hint)
 - One-by-one navigation with keyboard controls
-- Local audio file per letter in `assets/audio/`
+- Local audio file per letter in `assets/audio/` (WAV primary)
 - Speech synthesis fallback if an audio file fails to load
 
 ## Run locally
@@ -29,7 +29,8 @@ This repo includes `scripts/generate-audio.sh` for macOS:
 ./scripts/generate-audio.sh
 ```
 
-It creates 24 files in `assets/audio/` named like `01-alpha.m4a`.
+It creates 24 `.wav` files (primary playback) plus `.m4a` files in `assets/audio/`
+named like `01-alpha.wav`.
 The script uses the Greek `Melina (el_GR)` voice for more native pronunciation.
 
 ## Deploy to GitHub Pages
